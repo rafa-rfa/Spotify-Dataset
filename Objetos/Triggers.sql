@@ -1,37 +1,52 @@
--- VIEWS
+-- TRIGGER
 
--- TRACKS COM ARTISTAS
+-- NORMALIZAR NOME ARTISTA
 
-CREATE OR REPLACE VIEW vw_tracks_artists AS
-SELECT
-    t.track_id,
-    t.name AS track_name,
-    a.artist_name
-FROM tracks t
-JOIN track_artists ta ON ta.track_id = t.track_id
-JOIN artists a ON a.artist_id = ta.artist_id;
+CREATE OR REPLACE FUNCTION fn_trg_normaliza_artista()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.artist_name := lower(trim(NEW.artist_name));
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-
--- METRICAS POR ARTISTA
-
-CREATE OR REPLACE VIEW vw_metricas_por_artista AS
-SELECT
-    a.artist_id,
-    a.artist_name,
-    COUNT(t.track_id) AS total_tracks,
-    AVG(t.popularity) AS popularidade_media
-FROM artists a
-LEFT JOIN track_artists ta ON ta.artist_id = a.artist_id
-LEFT JOIN tracks t ON t.track_id = ta.track_id
-GROUP BY a.artist_id, a.artist_name;
+CREATE TRIGGER tg_normaliza_artista
+BEFORE INSERT OR UPDATE ON artists
+FOR EACH ROW
+EXECUTE FUNCTION fn_trg_normaliza_artista();
 
 
--- TRACKS MAIS POPULARES
+-- IMPEDIR POPULARIDADE INVALIDA
 
-CREATE OR REPLACE VIEW vw_top_tracks AS
-SELECT
-    track_id,
-    name,
-    popularity
-FROM tracks
-WHERE popularity >= 80;
+CREATE OR REPLACE FUNCTION fn_trg_valida_popularidade()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.popularity < 0 OR NEW.popularity > 100 THEN
+        RAISE EXCEPTION 'Popularidade inválida: %', NEW.popularity;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tg_valida_popularidade
+BEFORE INSERT OR UPDATE ON tracks
+FOR EACH ROW
+EXECUTE FUNCTION fn_trg_valida_popularidade();
+
+
+-- IMPEDIR TRACK SEM NOME
+
+CREATE OR REPLACE FUNCTION fn_trg_nome_track_obrigatorio()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.name IS NULL OR trim(NEW.name) = '' THEN
+        RAISE EXCEPTION 'Track sem nome não é permitida';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tg_nome_track_obrigatorio
+BEFORE INSERT OR UPDATE ON tracks
+FOR EACH ROW
+EXECUTE FUNCTION fn_trg_nome_track_obrigatorio();
