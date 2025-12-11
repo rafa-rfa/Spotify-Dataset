@@ -71,3 +71,49 @@ SELECT
 FROM exploded e
 JOIN artists a ON a.artist_name = e.artist_name
 ON CONFLICT DO NOTHING;
+
+
+
+Preenchimento da tabela genres:
+
+WITH exploded AS (
+    SELECT trim(unnest(string_to_array(genres, ','))) AS genre_name
+    FROM data_w_genres
+    WHERE genres IS NOT NULL AND genres <> ''
+)
+INSERT INTO genres (genre_name)
+SELECT DISTINCT genre_name
+FROM exploded
+ON CONFLICT (genre_name) DO NOTHING;
+
+
+WITH cleaned AS (
+    SELECT
+        d.id AS track_id,
+        regexp_replace(wg.genres, '[''\\[\\]\\'']', '', 'g') AS clean_genres
+    FROM data_w_genres wg
+    JOIN data d
+        ON wg.artists = d.artists
+       AND wg.acousticness = d.acousticness
+       AND wg.danceability = d.danceability
+       AND wg.energy = d.energy
+       AND wg.instrumentalness = d.instrumentalness
+       AND wg.liveness = d.liveness
+       AND wg.valence = d.valence
+       AND wg.duration_ms = d.duration_ms
+    WHERE wg.genres IS NOT NULL AND wg.genres <> ''
+),
+exploded AS (
+    SELECT
+        track_id,
+        trim(unnest(string_to_array(clean_genres, ','))) AS genre_name
+    FROM cleaned
+)
+INSERT INTO track_genres (track_id, genre_id)
+SELECT
+    e.track_id,
+    g.genre_id
+FROM exploded e
+JOIN genres g ON g.genre_name = e.genre_name
+WHERE e.genre_name <> ''
+ON CONFLICT DO NOTHING;
