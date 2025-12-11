@@ -1,52 +1,42 @@
--- TRIGGER
+-- FUNCTION
 
--- NORMALIZAR NOME ARTISTA
+-- POPULARIDADE MEDIA POR ARTISTA
 
-CREATE OR REPLACE FUNCTION fn_trg_normaliza_artista()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION fn_media_popularidade_artista(p_artist_id INT)
+RETURNS NUMERIC AS $$
 BEGIN
-    NEW.artist_name := lower(trim(NEW.artist_name));
-    RETURN NEW;
+    RETURN (
+        SELECT AVG(t.popularity)
+        FROM tracks t
+        JOIN track_artists ta ON ta.track_id = t.track_id
+        WHERE ta.artist_id = p_artist_id
+    );
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER tg_normaliza_artista
-BEFORE INSERT OR UPDATE ON artists
-FOR EACH ROW
-EXECUTE FUNCTION fn_trg_normaliza_artista();
 
+-- TOTAL DE MUSICA POR ARTISTA
 
--- IMPEDIR POPULARIDADE INVALIDA
-
-CREATE OR REPLACE FUNCTION fn_trg_valida_popularidade()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION fn_total_tracks_artista(p_artist_id INT)
+RETURNS INT AS $$
 BEGIN
-    IF NEW.popularity < 0 OR NEW.popularity > 100 THEN
-        RAISE EXCEPTION 'Popularidade inválida: %', NEW.popularity;
-    END IF;
-    RETURN NEW;
+    RETURN (
+        SELECT COUNT(*)
+        FROM track_artists
+        WHERE artist_id = p_artist_id
+    );
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER tg_valida_popularidade
-BEFORE INSERT OR UPDATE ON tracks
-FOR EACH ROW
-EXECUTE FUNCTION fn_trg_valida_popularidade();
 
+-- DURAÇAO MEDIA DE MUSICAS
 
--- IMPEDIR TRACK SEM NOME
-
-CREATE OR REPLACE FUNCTION fn_trg_nome_track_obrigatorio()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION fn_duracao_media()
+RETURNS NUMERIC AS $$
 BEGIN
-    IF NEW.name IS NULL OR trim(NEW.name) = '' THEN
-        RAISE EXCEPTION 'Track sem nome não é permitida';
-    END IF;
-    RETURN NEW;
+    RETURN (
+        SELECT AVG(duration_ms)
+        FROM tracks
+    );
 END;
 $$ LANGUAGE plpgsql;
-
-CREATE TRIGGER tg_nome_track_obrigatorio
-BEFORE INSERT OR UPDATE ON tracks
-FOR EACH ROW
-EXECUTE FUNCTION fn_trg_nome_track_obrigatorio();
