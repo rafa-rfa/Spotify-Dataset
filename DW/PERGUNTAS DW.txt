@@ -1,10 +1,34 @@
-PERGUNTAS DW
+1ª pergunta: Qual é o Top 10 artistas com a maior discografia?
 
--Os artistas mais ouvidos do mês
--Top 10 artistas do ano
--Top 5 álbuns mais ouvidos do mês
--Top 5 músicas mais ouvidas do ano
--Qual o nível de popularidade das músicas entre os anos 1980 a 2000?
--Quais tipo musicais são mais populares, as que são compostas por maior nível instrumental ou de menor nível instrumental?
+select count(track_id), artist_name from track_artists
+JOIN artists on artists.artist_id = track_artists.artist_id
+group by artist_name order by count(track_id) desc;
 
-Todas as perguntas tem em mente uma noção básica de quais tipos musicais mais atraem o público mensal e anualmente (curto a longo prazo), os fan bases mais populares e que mais valem a pena investimento e/ou suporte.
+
+2ª pergunta:
+
+Ano com maior quantidade de músicas lançadas e maior valor de danceabilidade agregado (Mais dançante)
+
+select 
+count(name) as Total_musicas, 
+extract(year from release_date) as Ano, 
+sum(danceability) as danciabilidade
+from tracks
+group by Ano
+order by Total_musicas desc
+
+
+3ª Pergunta:
+
+Top 10 artistas mais populares na história da música medido pela maior quantidade de público nos show "liveness" de suas músicas
+
+select 
+count(track_artists.track_id) as Quantidade_musica, 
+artist_name,
+sum(liveness) as medida_popularidade
+from track_artists
+JOIN artists 
+	on artists.artist_id = track_artists.artist_id
+JOIN tracks on tracks.track_id = track_artists.track_id
+group by artist_name 
+order by medida_popularidade desc;
