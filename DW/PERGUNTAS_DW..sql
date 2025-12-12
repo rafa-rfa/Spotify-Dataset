@@ -33,17 +33,19 @@ JOIN tracks on tracks.track_id = track_artists.track_id
 group by artist_name 
 order by medida_popularidade desc;
 
+4ª pergunta 
 
-4ª pergunta:
+-- A música com maior energia e intensidade por ano 
 
-SELECT ano, nome_musica, maior_danceability
+SELECT ano, nome_musica, energy
 FROM (
     SELECT 
         dt.ano,
-        fm.nome_musica,
-        fm.danceability AS maior_danceability,
-        ROW_NUMBER() OVER (PARTITION BY dt.ano ORDER BY fm.danceability DESC) AS posicao
+        dm.nome_musica,
+        fm.energy,
+        ROW_NUMBER() OVER (PARTITION BY dt.ano ORDER BY fm.energy DESC) AS posicao
     FROM fato_musica fm
+    JOIN dim_musica dm ON dm.sk_musica = fm.sk_musica
     JOIN dim_tempo dt ON dt.sk_tempo = fm.sk_tempo
 ) AS ranking
 WHERE posicao = 1
