@@ -1,21 +1,17 @@
-DROP TABLE IF EXISTS dim_artista CASCADE;
-CREATE TABLE dim_artista (
-    sk_artista      INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_artista_oltp INTEGER,
-    nome_artista    VARCHAR(200) NOT NULL,
-    UNIQUE (nome_artista)
-);
-
 DROP TABLE IF EXISTS dim_musica CASCADE;
 CREATE TABLE dim_musica (
-    sk_musica       INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_musica_oltp  TEXT,
+    id_musica_oltp  INTEGER primary key,
     nome_musica     VARCHAR(300) NOT NULL,
     explicita       BOOLEAN,
     duracao_ms      INTEGER,
     popularidade    INTEGER
 );
 
+DROP TABLE IF EXISTS dim_artista CASCADE;
+CREATE TABLE dim_artista (
+    id_artista_oltp INTEGER PRIMARY KEY,
+    nome_artista    VARCHAR(200) NOT NULL,
+);
 
 DROP TABLE IF EXISTS dim_tempo CASCADE;
 CREATE TABLE dim_tempo (
@@ -26,11 +22,11 @@ CREATE TABLE dim_tempo (
     data_completa DATE NOT NULL UNIQUE
 );
 
+
 DROP TABLE IF EXISTS fato_analise_musical CASCADE;
 CREATE TABLE fato_analise_musical (
-    sk_fato_musica INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    sk_musica      INTEGER NOT NULL,
-    sk_artista     INTEGER NOT NULL,
+    id_musica_oltp  INTEGER NOT NULL,
+    id_artista_oltp INTEGER NOT NULL,
     sk_tempo       INTEGER NOT NULL,
     -- Fatos medidos
     energy         NUMERIC(6,4),
@@ -43,7 +39,7 @@ CREATE TABLE fato_analise_musical (
     speechiness    NUMERIC(6,4),
     tempo          NUMERIC(8,3),
     -- Foreign Keys
-    FOREIGN KEY (sk_musica)  REFERENCES dim_musica(sk_musica),
-    FOREIGN KEY (sk_artista) REFERENCES dim_artista(sk_artista),
+    FOREIGN KEY (id_musica_oltp)  REFERENCES dim_musica(id_musica_oltp),
+    FOREIGN KEY (id_artista_oltp) REFERENCES dim_artista(id_artista_oltp),
     FOREIGN KEY (sk_tempo)   REFERENCES dim_tempo(sk_tempo)
 );

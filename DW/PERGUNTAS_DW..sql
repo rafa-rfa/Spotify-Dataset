@@ -20,7 +20,8 @@ order by Total_musicas desc
 
 3ª Pergunta:
 
-Top 10 artistas mais populares na história da música medido pela maior quantidade de público nos show "liveness" de suas músicas
+Top 10 artistas mais populares na história da música medido pela 
+maior quantidade de público nos show "liveness" de suas músicas
 
 select 
 count(track_artists.track_id) as Quantidade_musica, 
