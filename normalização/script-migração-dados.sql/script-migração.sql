@@ -1,3 +1,15 @@
+/* ATENÇÃO: PARA NÃO CONFUNDIR, COLOQUEI AQUI O MESMO SCRIPT DO VÍDEO. 
+ANTERIORMENTE, TINHA UMA DIFERENÇA DE QUE AQUI NO DW CADA DIMENSÃO TERIA
+UMA SEGUNDA CHAVE QUE É PARA CONTROLE INTERNO DO PRÓPRIO DW E NÃO DEPENDÊNCIA
+DA CHAVE DO BANCO RELACIONAL BASE. essa chave não é obrigatória, então só
+tirei ela.
+*/
+
+/* Criar o banco com esse script abaixo >> conectar o banco ao 
+pentaho/apachehop e utilizar o ETL já pronto da pasta ETL. as tabelas serão
+preenchidas automaticamente. tem que lembrar de conectar tbm o banco 
+relacional base
+*/
 DROP TABLE IF EXISTS dim_artista CASCADE;
 CREATE TABLE dim_artista (
     id_artista_oltp INTEGER PRIMARY KEY,
