@@ -21,12 +21,12 @@
   </notepads>
   <order>
     <hop>
-      <from>Table input Tracks</from>
+      <from>Table input</from>
       <to>Stream lookup</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Table input dim_tempo</from>
+      <from>Table input dim_musica</from>
       <to>Stream lookup</to>
       <enabled>Y</enabled>
     </hop>
@@ -36,8 +36,13 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Table input dim_artista</from>
+      <from>Table input artista</from>
       <to>Stream lookup 2</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Table input tempo</from>
+      <to>Stream lookup 3</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
@@ -46,19 +51,19 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Table input dim_musica</from>
-      <to>Stream lookup 3</to>
+      <from>Stream lookup 3</from>
+      <to>Select values</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Stream lookup 3</from>
+      <from>Select values</from>
       <to>Table output</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <transform>
-    <name>Stream lookup</name>
-    <type>StreamLookup</type>
+    <name>Select values</name>
+    <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -67,65 +72,89 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <from>Table input dim_tempo</from>
-    <input_sorted>N</input_sorted>
-    <preserve_memory>Y</preserve_memory>
-    <sorted_list>N</sorted_list>
-    <integer_pair>N</integer_pair>
-    <lookup>
-      <key>
-        <name>release_date</name>
-        <field>data_completa</field>
-      </key>
-      <value>
+    <fields>
+      <field>
+        <length>-2</length>
+        <name>energy</name>
+        <precision>-2</precision>
+        <rename/>
+      </field>
+      <field>
+        <length>-2</length>
+        <name>danceability</name>
+        <precision>-2</precision>
+        <rename/>
+      </field>
+      <field>
+        <length>-2</length>
+        <name>liveness</name>
+        <precision>-2</precision>
+        <rename/>
+      </field>
+      <field>
+        <length>-2</length>
+        <name>valence</name>
+        <precision>-2</precision>
+        <rename/>
+      </field>
+      <field>
+        <length>-2</length>
+        <name>acousticness</name>
+        <precision>-2</precision>
+        <rename/>
+      </field>
+      <field>
+        <length>-2</length>
+        <name>instrumentalness</name>
+        <precision>-2</precision>
+        <rename/>
+      </field>
+      <field>
+        <length>-2</length>
+        <name>loudness</name>
+        <precision>-2</precision>
+        <rename/>
+      </field>
+      <field>
+        <length>-2</length>
+        <name>speechiness</name>
+        <precision>-2</precision>
+        <rename/>
+      </field>
+      <field>
+        <length>-2</length>
+        <name>tempo</name>
+        <precision>-2</precision>
+        <rename/>
+      </field>
+      <field>
+        <length>-2</length>
+        <name>id_musica_oltp</name>
+        <precision>-2</precision>
+        <rename>sk_musica</rename>
+      </field>
+      <field>
+        <length>-2</length>
+        <name>sk_artista</name>
+        <precision>-2</precision>
+        <rename/>
+      </field>
+      <field>
+        <length>-2</length>
         <name>sk_tempo</name>
-        <rename>sk_tempo</rename>
-        <default>-1</default>
-        <type>Integer</type>
-      </value>
-    </lookup>
+        <precision>-2</precision>
+        <rename/>
+      </field>
+      <select_unspecified>N</select_unspecified>
+    </fields>
     <attributes/>
     <GUI>
-      <xloc>384</xloc>
-      <yloc>144</yloc>
+      <xloc>688</xloc>
+      <yloc>112</yloc>
     </GUI>
   </transform>
   <transform>
-    <name>Stream lookup 2</name>
-    <type>StreamLookup</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <from>Table input dim_artista</from>
-    <input_sorted>N</input_sorted>
-    <preserve_memory>Y</preserve_memory>
-    <sorted_list>N</sorted_list>
-    <integer_pair>N</integer_pair>
-    <lookup>
-      <key>
-        <name>artist_id</name>
-        <field>id_artista_oltp</field>
-      </key>
-      <value>
-        <name>id_artista_oltp</name>
-        <rename>id_artista_oltp</rename>
-        <default>-1</default>
-        <type>Integer</type>
-      </value>
-    </lookup>
-    <attributes/>
-    <GUI>
-      <xloc>576</xloc>
-      <yloc>144</yloc>
-    </GUI>
-  </transform>
-  <transform>
-    <name>Stream lookup 3</name>
+    <name>Stream lookup</name>
     <type>StreamLookup</type>
     <description/>
     <distribute>Y</distribute>
@@ -148,18 +177,86 @@
       <value>
         <name>id_musica_oltp</name>
         <rename>id_musica_oltp</rename>
-        <default>-1</default>
+        <default/>
+        <type>String</type>
+      </value>
+    </lookup>
+    <attributes/>
+    <GUI>
+      <xloc>160</xloc>
+      <yloc>112</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Stream lookup 2</name>
+    <type>StreamLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <from>Table input artista</from>
+    <input_sorted>N</input_sorted>
+    <preserve_memory>Y</preserve_memory>
+    <sorted_list>N</sorted_list>
+    <integer_pair>N</integer_pair>
+    <lookup>
+      <key>
+        <name>artist_id</name>
+        <field>id_artista_oltp</field>
+      </key>
+      <value>
+        <name>id_artista_oltp</name>
+        <rename>sk_artista</rename>
+        <default/>
         <type>Integer</type>
       </value>
     </lookup>
     <attributes/>
     <GUI>
-      <xloc>768</xloc>
-      <yloc>144</yloc>
+      <xloc>336</xloc>
+      <yloc>112</yloc>
     </GUI>
   </transform>
   <transform>
-    <name>Table input Tracks</name>
+    <name>Stream lookup 3</name>
+    <type>StreamLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <from>Table input tempo</from>
+    <input_sorted>N</input_sorted>
+    <preserve_memory>Y</preserve_memory>
+    <sorted_list>N</sorted_list>
+    <integer_pair>N</integer_pair>
+    <lookup>
+      <key>
+        <name>release_date</name>
+        <field>data_completa</field>
+      </key>
+      <value>
+        <name>sk_tempo</name>
+        <rename>sk_tempo</rename>
+        <default/>
+        <type>None</type>
+      </value>
+    </lookup>
+    <attributes/>
+    <GUI>
+      <xloc>496</xloc>
+      <yloc>112</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Table input</name>
     <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -186,17 +283,19 @@
     t.tempo,
     ta.artist_id
 FROM tracks t
-JOIN track_artists ta ON ta.track_id = t.track_id;
+JOIN track_artists ta
+    ON ta.track_id = t.track_id
+WHERE t.release_date IS NOT NULL;
 </sql>
     <variables_active>N</variables_active>
     <attributes/>
     <GUI>
-      <xloc>224</xloc>
-      <yloc>144</yloc>
+      <xloc>16</xloc>
+      <yloc>112</yloc>
     </GUI>
   </transform>
   <transform>
-    <name>Table input dim_artista</name>
+    <name>Table input artista</name>
     <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -210,16 +309,15 @@ JOIN track_artists ta ON ta.track_id = t.track_id;
     <execute_each_row>N</execute_each_row>
     <limit>0</limit>
     <sql>SELECT
-  sk_artista,
-  id_artista_oltp,
-  nome_artista
+  id_artista_oltp
+, nome_artista
 FROM "public".dim_artista
 </sql>
     <variables_active>N</variables_active>
     <attributes/>
     <GUI>
-      <xloc>576</xloc>
-      <yloc>32</yloc>
+      <xloc>336</xloc>
+      <yloc>16</yloc>
     </GUI>
   </transform>
   <transform>
@@ -237,23 +335,22 @@ FROM "public".dim_artista
     <execute_each_row>N</execute_each_row>
     <limit>0</limit>
     <sql>SELECT
-  sk_musica,
-  id_musica_oltp,
-  nome_musica,
-  explicita,
-  duracao_ms,
-  popularidade
+  id_musica_oltp
+, nome_musica
+, explicita
+, duracao_ms
+, popularidade
 FROM "public".dim_musica
 </sql>
     <variables_active>N</variables_active>
     <attributes/>
     <GUI>
-      <xloc>768</xloc>
-      <yloc>32</yloc>
+      <xloc>160</xloc>
+      <yloc>16</yloc>
     </GUI>
   </transform>
   <transform>
-    <name>Table input dim_tempo</name>
+    <name>Table input tempo</name>
     <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -267,18 +364,18 @@ FROM "public".dim_musica
     <execute_each_row>N</execute_each_row>
     <limit>0</limit>
     <sql>SELECT
-  sk_tempo,
-  dia,
-  mes,
-  ano,
-  data_completa
+  sk_tempo
+, dia
+, mes
+, ano
+, data_completa
 FROM "public".dim_tempo
 </sql>
     <variables_active>N</variables_active>
     <attributes/>
     <GUI>
-      <xloc>384</xloc>
-      <yloc>32</yloc>
+      <xloc>496</xloc>
+      <yloc>16</yloc>
     </GUI>
   </transform>
   <transform>
@@ -300,6 +397,18 @@ FROM "public".dim_tempo
     <connection>dw_spotify</connection>
     <drop_columns>N</drop_columns>
     <fields>
+      <field>
+        <column_name>id_musica_oltp</column_name>
+        <stream_name>id_musica_oltp</stream_name>
+      </field>
+      <field>
+        <column_name>sk_artista</column_name>
+        <stream_name>sk_artista</stream_name>
+      </field>
+      <field>
+        <column_name>sk_tempo</column_name>
+        <stream_name>sk_tempo</stream_name>
+      </field>
       <field>
         <column_name>energy</column_name>
         <stream_name>energy</stream_name>
@@ -336,18 +445,6 @@ FROM "public".dim_tempo
         <column_name>tempo</column_name>
         <stream_name>tempo</stream_name>
       </field>
-      <field>
-        <column_name>sk_tempo</column_name>
-        <stream_name>sk_tempo</stream_name>
-      </field>
-      <field>
-        <column_name>sk_artista</column_name>
-        <stream_name>id_artista_oltp</stream_name>
-      </field>
-      <field>
-        <column_name>sk_musica</column_name>
-        <stream_name>id_musica_oltp</stream_name>
-      </field>
     </fields>
     <ignore_errors>N</ignore_errors>
     <only_when_have_rows>N</only_when_have_rows>
@@ -364,8 +461,8 @@ FROM "public".dim_tempo
     <use_batch>Y</use_batch>
     <attributes/>
     <GUI>
-      <xloc>928</xloc>
-      <yloc>144</yloc>
+      <xloc>688</xloc>
+      <yloc>224</yloc>
     </GUI>
   </transform>
   <transform_error_handling>
