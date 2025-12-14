@@ -38,18 +38,33 @@ order by medida_popularidade desc;
 
 -- A música com maior energia e intensidade por ano 
 
-SELECT ano, nome_musica, energy
-FROM (
-    SELECT 
-        dt.ano,
-        dm.nome_musica,
-        fm.energy,
-        ROW_NUMBER() OVER (PARTITION BY dt.ano ORDER BY fm.energy DESC) AS posicao
-    FROM fato_musica fm
-    JOIN dim_musica dm ON dm.sk_musica = fm.sk_musica
-    JOIN dim_tempo dt ON dt.sk_tempo = fm.sk_tempo
-) AS ranking
-WHERE posicao = 1
-ORDER BY ano DESC;
-
+WITH RankedTracks AS (
+    -- Seleciona as colunas relevantes da tabela 'tracks'
+    SELECT
+        year,             -- Ano de lançamento da música
+        name AS nome_musica, -- Nome da música
+        energy,           -- Valor de energia (0.0 a 1.0)
+        -- Classifica as músicas dentro de cada 'year' pelo valor de 'energy' em ordem decrescente
+        ROW_NUMBER() OVER (
+            PARTITION BY year 
+            ORDER BY energy DESC
+        ) AS posicao_ranking
+    FROM 
+        tracks
+    -- Filtra anos válidos (ignora NULL ou anos muito antigos/futuros se necessário, 
+    -- mas aqui assumimos que 'year' já está limpo o suficiente)
+    WHERE 
+        year IS NOT NULL 
+)
+-- Seleciona apenas a primeira música de cada ano (a de maior energia)
+SELECT
+    year,
+    nome_musica,
+    energy
+FROM
+    RankedTracks
+WHERE
+    posicao_ranking = 1
+ORDER BY 
+    year DESC;
 
