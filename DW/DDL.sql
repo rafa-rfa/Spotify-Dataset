@@ -1,9 +1,7 @@
 DROP TABLE IF EXISTS dim_artista CASCADE;
 CREATE TABLE dim_artista (
-    sk_artista      INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_artista_oltp INTEGER,
-    nome_artista    TEXT NOT NULL,
-    UNIQUE (nome_artista)
+    id_artista_oltp INTEGER PRIMARY KEY,
+    nome_artista    TEXT
 );
 
 DROP TABLE IF EXISTS dim_musica CASCADE;
