@@ -17,6 +17,7 @@ CREATE TABLE dim_musica (
 
 DROP TABLE IF EXISTS dim_tempo CASCADE;
 CREATE TABLE dim_tempo (
+    sk_tempo serial primary key
     dia           INTEGER,
     mes           INTEGER,
     ano           INTEGER,
@@ -25,7 +26,8 @@ CREATE TABLE dim_tempo (
 
 DROP TABLE IF EXISTS fato_analise_musical CASCADE;
 CREATE TABLE fato_analise_musical (
-    sk_musica      TEXT NOT NULL PRIMARY KEY,
+    sk_fato_musica INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    sk_musica      TEXT NOT NULL,
     sk_artista     TEXT NOT NULL,
     sk_tempo       INTEGER NOT NULL,
     -- Fatos medidos
