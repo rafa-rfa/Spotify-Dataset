@@ -83,3 +83,27 @@ pgbadger /var/log/postgresql/postgresql-18-main.log.1 -o ~/pgbadger_relatorio.ht
 
 postgresql-18-main.l
 og.1
+
+
+
+1 - acessar client postgree
+
+psql -h localhost -U postgres
+
+
+2 - encontrar arquivo de configuração do postgree
+
+show config_file;
+
+
+3 - visualizar os logs:
+
+ls /var/log/postgresql/
+
+
+4 - Executar o PGbadger com o log gerado no Postgree:
+
+pgbadger /var/log/postgresql/<substituir nome do log aqui> -o ~/pgbadger_relatorio.html
+
+
+
