@@ -59,3 +59,27 @@ PARA VISUALIZAR OS LOGS:
 ls /var/log/postgresql/
 
 Nessa pasta veremos atualizações após execução de um ETL ou consultas no banco de dados.
+
+
+Comando para gerar os relatórios:
+
+pgbadger \
+  /var/log/postgresql/postgresql-*.log \
+  -o relatorio_pg.html
+
+
+/etc/postgresql/18/main/postgresql.conf
+
+pgbadger /var/lib/postgresql/18/main/log/*.log -o ~/pgbadger_relatorio.html
+
+
+pgbadger /var/lib/postgresql/18/main/log/*.log -o ~/pgbadger_relatorio.html
+
+executar o comando: 
+pgbadger /var/log/postgresql/postgresql-18-main.log.1 -o ~/pgbadger_relatorio.html
+
+
+é importante verificar se existem logs primeiro e substituir no comando acima. acessamos a pasta /var/log/postgresql para visualizar os logs recentes 
+
+postgresql-18-main.l
+og.1
