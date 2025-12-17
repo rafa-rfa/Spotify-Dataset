@@ -53,6 +53,3 @@ ls /var/log/postgresql/
 6 - Executar o PGbadger com o log gerado no Postgree:
 
 pgbadger /var/log/postgresql/<substituir nome do log aqui> -o ~/pgbadger_relatorio.html
-
-
-
