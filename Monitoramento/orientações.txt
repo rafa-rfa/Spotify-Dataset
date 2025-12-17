@@ -12,96 +12,45 @@ Configurar o Postgree para gerar os logs:
 Pgbadger: é uma ferramenta que pega os logs gerados pelo Postgreesql e então gera um arquivo HTML mais bonitinho que pode ser analisado.
 
 
-Achar o arquivo postgresql.conf
-
-
-sudo apt update
-sudo apt install postgresql-client
-
-instalar o cliente do postgresql 
+2 - instalar o cliente do postgresql 
 
 postgresql-client que vai nos permitir executar o comando pgql
 
-Se conectar ao cliente do postgreesql
+
+3 - acessar client postgree
 
 psql -h localhost -U postgres
 
 
-localizar o arquivo postgresql.conf
+4 - encontrar arquivo de configuração do postgree
 
-Vai mostrar o arquivo que vamos editar para ativar os logs do pgBadger 
+show config_file;
 
-postgres=# show config_file;
-               config_file               
------------------------------------------
- /etc/postgresql/18/main/postgresql.conf
-(1 linha)
+inserimos nesse arquivo conf algumas configurações para geração de logs que serão lidos pelo Pgbadger:
 
-postgres=# 
-
-
-devemos encontrar ou colar essas linhas:
-
+Inserir:
 
 logging_collector = on
 
 log_directory = 'log'
 log_filename = 'postgresql-%Y-%m-%d.log'
 
+log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
 
+log_min_duration_statement = 500
 
-depois de inserir tudo, vamos reiniciar o postgreesql 
-
-sudo systemctl restart postgresql
-
-PARA VISUALIZAR OS LOGS:
-
-ls /var/log/postgresql/
-
-Nessa pasta veremos atualizações após execução de um ETL ou consultas no banco de dados.
-
-
-Comando para gerar os relatórios:
-
-pgbadger \
-  /var/log/postgresql/postgresql-*.log \
-  -o relatorio_pg.html
-
-
-/etc/postgresql/18/main/postgresql.conf
-
-pgbadger /var/lib/postgresql/18/main/log/*.log -o ~/pgbadger_relatorio.html
-
-
-pgbadger /var/lib/postgresql/18/main/log/*.log -o ~/pgbadger_relatorio.html
-
-executar o comando: 
-pgbadger /var/log/postgresql/postgresql-18-main.log.1 -o ~/pgbadger_relatorio.html
-
-
-é importante verificar se existem logs primeiro e substituir no comando acima. acessamos a pasta /var/log/postgresql para visualizar os logs recentes 
-
-postgresql-18-main.l
-og.1
+log_checkpoints = on
+log_connections = on
+log_disconnections = on
 
 
 
-1 - acessar client postgree
-
-psql -h localhost -U postgres
-
-
-2 - encontrar arquivo de configuração do postgree
-
-show config_file;
-
-
-3 - visualizar os logs:
+5 - visualizar os logs:
 
 ls /var/log/postgresql/
 
 
-4 - Executar o PGbadger com o log gerado no Postgree:
+6 - Executar o PGbadger com o log gerado no Postgree:
 
 pgbadger /var/log/postgresql/<substituir nome do log aqui> -o ~/pgbadger_relatorio.html
 
