@@ -6,8 +6,7 @@ CREATE TABLE dim_artista (
 
 DROP TABLE IF EXISTS dim_musica CASCADE;
 CREATE TABLE dim_musica (
-    sk_musica       INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_musica_oltp  TEXT SERIAL  PRIMARY KEY,
+    id_musica_oltp  TEXT PRIMARY KEY,
     nome_musica     VARCHAR(300) NOT NULL,
     explicita       BOOLEAN,
     duracao_ms      INTEGER,
@@ -17,7 +16,7 @@ CREATE TABLE dim_musica (
 
 DROP TABLE IF EXISTS dim_tempo CASCADE;
 CREATE TABLE dim_tempo (
-    sk_tempo serial primary key
+    sk_tempo serial primary key,
     dia           INTEGER,
     mes           INTEGER,
     ano           INTEGER,
@@ -27,7 +26,7 @@ CREATE TABLE dim_tempo (
 DROP TABLE IF EXISTS fato_analise_musical CASCADE;
 CREATE TABLE fato_analise_musical (
     sk_musica      TEXT,
-    sk_artista     TEXT,
+    sk_artista     INTEGER,
     sk_tempo       INTEGER,
     -- Fatos medidos
     energy         NUMERIC(6,4),
@@ -40,7 +39,7 @@ CREATE TABLE fato_analise_musical (
     speechiness    NUMERIC(6,4),
     tempo          NUMERIC(8,3),
     -- Foreign Keys
-    FOREIGN KEY (sk_musica)  REFERENCES dim_musica(sk_musica),
-    FOREIGN KEY (sk_artista) REFERENCES dim_artista(sk_artista),
+    FOREIGN KEY (sk_musica)  REFERENCES dim_musica(id_musica_oltp),
+    FOREIGN KEY (sk_artista) REFERENCES dim_artista(id_artista_oltp),
     FOREIGN KEY (sk_tempo)   REFERENCES dim_tempo(sk_tempo)
 );
