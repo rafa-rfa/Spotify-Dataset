@@ -1,0 +1,61 @@
+ETAPA BÔNUS: monitoramento
+
+1 - Instalar o PGbadger
+
+sudo apt update
+sudo apt install pgbadger
+
+pdbadger --version para verificar se instalou 
+
+Configurar o Postgree para gerar os logs:
+
+Pgbadger: é uma ferramenta que pega os logs gerados pelo Postgreesql e então gera um arquivo HTML mais bonitinho que pode ser analisado.
+
+
+Achar o arquivo postgresql.conf
+
+
+sudo apt update
+sudo apt install postgresql-client
+
+instalar o cliente do postgresql 
+
+postgresql-client que vai nos permitir executar o comando pgql
+
+Se conectar ao cliente do postgreesql
+
+psql -h localhost -U postgres
+
+
+localizar o arquivo postgresql.conf
+
+Vai mostrar o arquivo que vamos editar para ativar os logs do pgBadger 
+
+postgres=# show config_file;
+               config_file               
+-----------------------------------------
+ /etc/postgresql/18/main/postgresql.conf
+(1 linha)
+
+postgres=# 
+
+
+devemos encontrar ou colar essas linhas:
+
+
+logging_collector = on
+
+log_directory = 'log'
+log_filename = 'postgresql-%Y-%m-%d.log'
+
+
+
+depois de inserir tudo, vamos reiniciar o postgreesql 
+
+sudo systemctl restart postgresql
+
+PARA VISUALIZAR OS LOGS:
+
+ls /var/log/postgresql/
+
+Nessa pasta veremos atualizações após execução de um ETL ou consultas no banco de dados.
