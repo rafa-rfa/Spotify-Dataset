@@ -26,9 +26,9 @@ CREATE TABLE dim_tempo (
 
 DROP TABLE IF EXISTS fato_analise_musical CASCADE;
 CREATE TABLE fato_analise_musical (
-    sk_musica      TEXT NOT NULL,
-    sk_artista     TEXT NOT NULL,
-    sk_tempo       INTEGER NOT NULL,
+    sk_musica      TEXT,
+    sk_artista     TEXT,
+    sk_tempo       INTEGER,
     -- Fatos medidos
     energy         NUMERIC(6,4),
     danceability   NUMERIC(6,4),
