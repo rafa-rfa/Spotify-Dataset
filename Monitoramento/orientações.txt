@@ -287,4 +287,9 @@ Idle connections
 
 
 
+resetar senha do grafana se necesśario:
+
+
+sudo /usr/sbin/grafana-cli admin reset-admin-password NovaSenha@123
+
 
