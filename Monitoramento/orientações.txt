@@ -282,3 +282,9 @@ Queries per second
 Active connections
 
 Idle connections
+
+
+
+
+
+
