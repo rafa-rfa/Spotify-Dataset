@@ -28,6 +28,9 @@ show config_file;
 
 inserimos nesse arquivo conf algumas configurações para geração de logs que serão lidos pelo Pgbadger:
 
+
+executar sudo nano /etc/postgresql/18/main/postgresql.conf para editar o arquivo de configuração
+
 Inserir:
 
 logging_collector = on
@@ -49,7 +52,239 @@ log_disconnections = on
 
 ls /var/log/postgresql/
 
+Verificar se houve atualização após executar querys, ETL's 
+
+ls -lh /var/log/postgresql/postgresql-18-main.log
+
 
 6 - Executar o PGbadger com o log gerado no Postgree:
 
 pgbadger /var/log/postgresql/<substituir nome do log aqui> -o ~/pgbadger_relatorio.html
+
+sudo -u postgres pgbadger \
+/var/log/postgresql/postgresql-18-main-2025-12-17.log \
+-o /tmp/pgbadger.html
+
+
+7 - Abrir o relatorio em HTML após rodar o comando do pgbadger especificando o log
+
+xdg-open ~/pgbadger_relatorio.html
+
+
+gio open ~/pgbadger_relatorio.html
+
+
+
+
+Banco pode não ter gerado logs suficientes
+
+
+consulta não normalizada, demorada:
+
+SELECT *
+FROM fato_analise_musical f
+JOIN dim_musica m
+  ON CAST(f.sk_musica AS TEXT) = CAST(m.id_musica_oltp AS TEXT)
+JOIN dim_artista a
+  ON f.sk_artista = a.id_artista_oltp
+JOIN dim_tempo t
+  ON f.sk_tempo = t.sk_tempo
+order by f.sk_musica;
+
+
+
+Query normal, eficiente:
+
+
+SELECT
+    f.energy,
+    f.danceability,
+    f.tempo,
+    t.ano
+FROM fato_analise_musical f
+JOIN dim_tempo t
+  ON f.sk_tempo = t.sk_tempo
+WHERE t.ano = 2023;
+
+
+
+
+
+PASSO A PASSO MONITORAMENTO COM Prometheus + PostgreSQL Exporter + Grafana
+
+sudo -u postgres psql
+
+CREATE USER exporter WITH PASSWORD 'exporter123';
+GRANT pg_monitor TO exporter;
+
+
+
+
+
+
+PROCEDIMENTO OFICIAL ADOTADO:
+
+
+INSTALAÇÃO DO POSTGRES-EXPORTER:
+
+
+sudo apt update
+sudo apt install -y prometheus-postgres-exporter
+
+
+postgres_exporter --version
+
+
+
+criar o diretório do prometheus 
+
+sudo mkdir -p /etc/prometheus
+sudo chown root:root /etc/prometheus
+sudo chmod 755 /etc/prometheus
+
+preencher arquivo de configuração:
+
+sudo nano /etc/prometheus/postgres_exporter.conf
+
+
+Inserir DATA_SOURCE_NAME="postgresql://exporter:exporter123@localhost:5432/postgres?sslmode=disable"
+
+
+teste para ver se está tudo ok:
+
+curl http://localhost:9187/metrics | head
+
+
+arquitetura:
+
+PostgreSQL 18
+   ↓
+postgres_exporter (9187)
+   ↓
+Prometheus (9090)
+   ↓
+Grafana (3000)
+
+
+
+INSTALAÇÃO DO PROMETHEUS:
+
+sudo apt update
+sudo apt install prometheus -y
+
+checar status do prometheus:
+
+prometheus --version
+sudo systemctl status prometheus
+
+
+3 - CONFIGURAR PROMETHEUS PARA LER POSTGRES
+
+sudo nano /etc/prometheus/prometheus.yml
+
+Adicionamos esse bloco no final do documento do prometheus:
+
+
+  - job_name: "postgresql"
+    static_configs:
+      - targets: ["localhost:9187"]
+
+
+
+http://localhost:9090/classic/graph interface principal 
+
+status dos targets http://localhost:9090/classic/targets
+
+métricas internas  http://localhost:9090/metrics 
+
+
+
+INSTALAR O GRAFANA:
+
+sudo apt update
+sudo apt install -y grafana
+
+se não der certo acima, rodar:
+
+sudo apt install -y apt-transport-https software-properties-common wget
+
+
+Adicionar a chave GPG do Grafana:
+
+sudo mkdir -p /etc/apt/keyrings
+wget -q -O - https://apt.grafana.com/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/grafana.gpg
+
+
+adicionar repositório oficial do grafana:
+
+echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" \
+| sudo tee /etc/apt/sources.list.d/grafana.list
+
+
+atualizar e instalar grafana:
+
+sudo apt update
+sudo apt install -y grafana
+
+
+ativar e iniciar o serviço:
+
+sudo systemctl daemon-reexec
+sudo systemctl enable grafana-server
+sudo systemctl start grafana-server
+
+
+verificar se está ativo e ok:
+
+sudo systemctl status grafana-server
+
+
+sudo ss -lntp | grep 3000
+
+
+usuário: admin 
+
+senha: admin 
+
+serão trocados. 
+
+
+
+Agora que acessamos o grafana na porta 3000 pesquisando por http://localhost:3000/
+
+
+ADICIONAR PROMETHEUS COMO DATA SOURCE
+
+
+
+confgiurar usuario no postgres:
+
+sudo -u postgres psql
+CREATE USER exporter WITH PASSWORD 'exporter123';
+
+
+
+
+IMPORTAR DASHBOARD PARA O GRAFANA:
+
+
+Dashboards → New → Import
+
+
+
+ANÁLISE DO DASHBOARD ANTES E DEPOIS DO ETL:
+
+
+Transactions per second
+
+Queries per second
+
+Active connections
+
+Idle connections
+
+
+
+
+
+
